@@ -1,40 +1,696 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Fresh Vegetables</title>
-</head>
-  <h1 style="text-align:center; color:green;">Fresh Vegetables Delivery</h1>
-  <p style="text-align:center;">Order fresh vegetables online and get them delivered to your doorstep.</p>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vegitables | Fresh Grocery App</title>
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #16a34a;
+      --accent-dark: #15803d;
+      --dark: #0f172a;
+      --danger: #dc2626;
+      --border: #e5e7eb;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
+    }
 
-<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:30px;">
-    <div style="border:1px solid #ccc; padding:10px; text-align:center; width:150px;">
-      <img src="https://via.placeholder.com/150" alt="Tomato" style="width:100%;">
-      <h3>Tomato</h3>
-      <p>₹40 / kg</p>
-      <button>Add to Cart</button>
-    </div>
-    <div style="border:1px solid #ccc; padding:10px; text-align:center; width:150px;">
-      <img src="https://via.placeholder.com/150" alt="Potato" style="width:100%;">
-      <h3>Potato</h3>
-      <p>₹30 / kg</p>
-      <button>Add to Cart</button>
-    </div>
-    <div style="border:1px solid #ccc; padding:10px; text-align:center; width:150px;">
-      <img src="https://via.placeholder.com/150" alt="Carrot" style="width:100%;">
-      <h3>Carrot</h3>
-      <p>₹50 / kg</p>
-      <button>Add to Cart</button>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(140deg, #edf1f5, #dfe7ee);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid #dce3ea;
+    }
+
+    .app-header {
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+    }
+
+    .logo {
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+    }
+
+    .logo-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(145deg, var(--accent), var(--accent-dark));
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s ease;
+      background: #eef2f7;
+      color: #1f2937;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--dark);
+      color: #fff;
+    }
+
+    .btn-accent {
+      background: linear-gradient(140deg, var(--accent), var(--accent-dark));
+      color: #fff;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      min-height: 620px;
+    }
+
+    .catalog {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+      background: linear-gradient(#fff, #fbfdff);
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 10px;
+    }
+
+    .title-row h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 1.8vw, 1.9rem);
+      line-height: 1.1;
+    }
+
+    .subtitle { color: var(--muted); margin: 6px 0 0; }
+
+    .search-wrap {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      background: #fff;
+    }
+
+    #searchInput { flex: 1 1 250px; }
+    #categoryFilter { flex: 0 0 180px; }
+
+    .products {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .product-card img {
+      width: 100%;
+      border-radius: 12px;
+      height: 120px;
+      object-fit: cover;
+      background: #f3f4f6;
+    }
+
+    .pill {
+      align-self: flex-start;
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .product-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      gap: 6px;
+    }
+
+    .price { font-weight: 700; }
+
+    .sidebar {
+      padding: 20px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .cart-list {
+      max-height: 250px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .qty-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 7px;
+      background: #e2e8f0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .totals {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+      color: #374151;
+    }
+
+    .line.total {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #111827;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .checkout-form {
+      display: grid;
+      gap: 8px;
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab.active { background: #ecfeff; border-color: #a5f3fc; }
+
+    .auth-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 40;
+    }
+
+    .auth-modal.open { display: flex; }
+
+    .auth-card {
+      width: min(420px, 100%);
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .auth-options { display: grid; gap: 10px; margin-top: 10px; }
+
+    .auth-btn {
+      width: 100%;
+      border-radius: 999px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .auth-btn.dark {
+      background: #030712;
+      color: #fff;
+      border-color: #111827;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      font-size: 14px;
+      z-index: 70;
+    }
+
+    #toast.show { opacity: 1; }
+
+    @media (max-width: 920px) {
+      .main { grid-template-columns: 1fr; }
+      .catalog { border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="logo"><span class="logo-badge">V</span>Vegitables</div>
+      <div class="header-actions">
+        <button class="btn" id="openAccountBtn">Account</button>
+        <button class="btn btn-primary" id="openSignIn">Sign in</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="catalog">
+        <div class="title-row">
+          <div>
+            <h1>Hungry? Order Fresh Food.</h1>
+            <p class="subtitle">Browse vegetables and fast food items, add to cart, and checkout in one place.</p>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <input id="searchInput" placeholder="Search by name..." />
+          <select id="categoryFilter">
+            <option value="all">All categories</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Fast Food">Fast Food</option>
+            <option value="Fruits">Fruits</option>
+          </select>
+        </div>
+
+        <div id="products" class="products"></div>
+      </section>
+
+      <aside class="sidebar">
+        <section class="panel">
+          <h2>My Cart</h2>
+          <div id="cartList" class="cart-list"></div>
+          <div class="totals">
+            <div class="line"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+            <div class="line"><span>Tax (8%)</span><strong id="tax">$0.00</strong></div>
+            <div class="line total"><span>Total</span><strong id="total">$0.00</strong></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Checkout</h2>
+          <form id="checkoutForm" class="checkout-form">
+            <input id="fullName" required placeholder="Full name" />
+            <input id="address" required placeholder="Street name and number" />
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <input id="city" required placeholder="City" />
+              <input id="zip" required placeholder="ZIP" />
+            </div>
+            <select id="payment" required>
+              <option value="">Select payment</option>
+              <option>Credit Card</option>
+              <option>Google Pay</option>
+              <option>Cash on Delivery</option>
+            </select>
+            <button class="btn btn-accent" type="submit">Place Order</button>
+            <span class="helper">Orders are saved in your browser (local demo).</span>
+          </form>
+        </section>
+
+        <section class="panel" id="accountPanel" hidden>
+          <h2>Account</h2>
+          <div id="accountInfo"></div>
+          <div class="tabs">
+            <button class="tab active">General</button>
+            <button class="tab">Security</button>
+            <button class="tab">Support</button>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div id="authModal" class="auth-modal" role="dialog" aria-modal="true">
+    <div class="auth-card">
+      <h2 style="margin:0;">Sign in to continue</h2>
+      <p class="helper">Use one of these options to register or log in to your account.</p>
+      <div class="auth-options">
+        <button class="auth-btn dark" data-provider="Google">Continue with Google</button>
+        <button class="auth-btn" data-provider="Apple">Continue with Apple</button>
+        <button class="auth-btn" id="useEmailBtn">Continue with Email</button>
+      </div>
+      <form id="emailForm" style="display:none; margin-top:12px;">
+        <input id="emailInput" type="email" placeholder="you@example.com" required />
+        <button class="btn btn-primary" type="submit" style="margin-top:10px; width:100%;">Continue</button>
+      </form>
+      <button class="btn" id="closeSignIn" style="margin-top:10px; width:100%;">Close</button>
     </div>
   </div>
-  </body>
+
+  <div id="toast"></div>
+
   <script>
-  const buttons = document.querySelectorAll("button");
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const product = btn.parentElement.querySelector("h3").innerText;
-      alert(product + " added to cart!");
+    const PRODUCTS = [
+      { id: 1, name: 'Tomato', price: 3.2, category: 'Vegetables', image: 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=500&auto=format&fit=crop' },
+      { id: 2, name: 'Potato', price: 2.1, category: 'Vegetables', image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&auto=format&fit=crop' },
+      { id: 3, name: 'Carrot', price: 4.0, category: 'Vegetables', image: 'https://images.unsplash.com/photo-1447175008436-054170c2e979?w=500&auto=format&fit=crop' },
+      { id: 4, name: 'Pizza Slice', price: 8.99, category: 'Fast Food', image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=500&auto=format&fit=crop' },
+      { id: 5, name: 'Hot Dog', price: 5.99, category: 'Fast Food', image: 'https://images.unsplash.com/photo-1612392166886-ee8475b03f6d?w=500&auto=format&fit=crop' },
+      { id: 6, name: 'Apple', price: 2.8, category: 'Fruits', image: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=500&auto=format&fit=crop' },
+      { id: 7, name: 'Orange', price: 2.6, category: 'Fruits', image: 'https://images.unsplash.com/photo-1547514701-42782101795e?w=500&auto=format&fit=crop' },
+      { id: 8, name: 'Cabbage', price: 3.4, category: 'Vegetables', image: 'https://images.unsplash.com/photo-1611105637889-3afd7295bdbf?w=500&auto=format&fit=crop' }
+    ];
+
+    const state = {
+      cart: JSON.parse(localStorage.getItem('vegitables-cart') || '{}'),
+      user: JSON.parse(localStorage.getItem('vegitables-user') || 'null')
+    };
+
+    const productsEl = document.getElementById('products');
+    const cartListEl = document.getElementById('cartList');
+    const subtotalEl = document.getElementById('subtotal');
+    const taxEl = document.getElementById('tax');
+    const totalEl = document.getElementById('total');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const toastEl = document.getElementById('toast');
+    const authModal = document.getElementById('authModal');
+    const accountPanel = document.getElementById('accountPanel');
+    const accountInfo = document.getElementById('accountInfo');
+
+    function money(num) {
+      return `$${num.toFixed(2)}`;
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2000);
+    }
+
+    function saveState() {
+      localStorage.setItem('vegitables-cart', JSON.stringify(state.cart));
+      localStorage.setItem('vegitables-user', JSON.stringify(state.user));
+    }
+
+    function filteredProducts() {
+      const query = searchInput.value.trim().toLowerCase();
+      const category = categoryFilter.value;
+      return PRODUCTS.filter(p => {
+        const matchesQuery = p.name.toLowerCase().includes(query);
+        const matchesCat = category === 'all' || p.category === category;
+        return matchesQuery && matchesCat;
+      });
+    }
+
+    function renderProducts() {
+      const list = filteredProducts();
+      productsEl.innerHTML = list.map(p => `
+        <article class="product-card">
+          <img src="${p.image}" alt="${p.name}" loading="lazy" />
+          <span class="pill">${p.category}</span>
+          <strong>${p.name}</strong>
+          <div class="product-foot">
+            <span class="price">${money(p.price)}</span>
+            <button class="btn btn-primary" data-add="${p.id}">Add</button>
+          </div>
+        </article>
+      `).join('') || '<p class="helper">No products found.</p>';
+    }
+
+    function cartEntries() {
+      return Object.entries(state.cart)
+        .map(([id, qty]) => {
+          const product = PRODUCTS.find(p => p.id === Number(id));
+          return product ? { ...product, qty } : null;
+        })
+        .filter(Boolean);
+    }
+
+    function updateTotals() {
+      const subtotal = cartEntries().reduce((sum, item) => sum + item.price * item.qty, 0);
+      const tax = subtotal * 0.08;
+      const total = subtotal + tax;
+      subtotalEl.textContent = money(subtotal);
+      taxEl.textContent = money(tax);
+      totalEl.textContent = money(total);
+      return { subtotal, total };
+    }
+
+    function renderCart() {
+      const items = cartEntries();
+      cartListEl.innerHTML = items.length
+        ? items.map(item => `
+          <div class="cart-item">
+            <div>
+              <strong>${item.name}</strong><br />
+              <span class="helper">${money(item.price)} each</span>
+            </div>
+            <div>
+              <div class="qty-controls">
+                <button class="icon-btn" data-dec="${item.id}">-</button>
+                <strong>${item.qty}</strong>
+                <button class="icon-btn" data-inc="${item.id}">+</button>
+              </div>
+            </div>
+          </div>
+        `).join('')
+        : '<p class="helper">Your cart is empty.</p>';
+      updateTotals();
+    }
+
+    function addToCart(id) {
+      state.cart[id] = (state.cart[id] || 0) + 1;
+      saveState();
+      renderCart();
+      showToast('Item added to cart');
+    }
+
+    function changeQty(id, direction) {
+      if (!state.cart[id]) return;
+      state.cart[id] += direction;
+      if (state.cart[id] <= 0) delete state.cart[id];
+      saveState();
+      renderCart();
+    }
+
+    function renderAccount() {
+      if (!state.user) {
+        accountInfo.innerHTML = '<p class="helper">Not signed in yet.</p>';
+        return;
+      }
+      accountInfo.innerHTML = `
+        <strong>${state.user.name}</strong><br>
+        <span class="helper">${state.user.email}</span>
+      `;
+    }
+
+    document.getElementById('products').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-add]');
+      if (!btn) return;
+      addToCart(btn.dataset.add);
     });
-  });
+
+    cartListEl.addEventListener('click', (e) => {
+      const inc = e.target.closest('[data-inc]');
+      const dec = e.target.closest('[data-dec]');
+      if (inc) changeQty(inc.dataset.inc, +1);
+      if (dec) changeQty(dec.dataset.dec, -1);
+    });
+
+    searchInput.addEventListener('input', renderProducts);
+    categoryFilter.addEventListener('change', renderProducts);
+
+    document.getElementById('openSignIn').addEventListener('click', () => {
+      authModal.classList.add('open');
+    });
+
+    document.getElementById('closeSignIn').addEventListener('click', () => {
+      authModal.classList.remove('open');
+    });
+
+    authModal.addEventListener('click', (e) => {
+      if (e.target === authModal) authModal.classList.remove('open');
+    });
+
+    document.querySelectorAll('[data-provider]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const provider = btn.dataset.provider;
+        state.user = {
+          name: provider + ' User',
+          email: `user@${provider.toLowerCase()}.com`
+        };
+        saveState();
+        renderAccount();
+        authModal.classList.remove('open');
+        showToast(`Signed in with ${provider}`);
+      });
+    });
+
+    document.getElementById('useEmailBtn').addEventListener('click', () => {
+      document.getElementById('emailForm').style.display = 'block';
+    });
+
+    document.getElementById('emailForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      state.user = {
+        name: email.split('@')[0] || 'Guest User',
+        email
+      };
+      saveState();
+      renderAccount();
+      authModal.classList.remove('open');
+      showToast('Signed in with email');
+    });
+
+    document.getElementById('openAccountBtn').addEventListener('click', () => {
+      accountPanel.hidden = !accountPanel.hidden;
+    });
+
+    document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const { subtotal } = updateTotals();
+      if (subtotal <= 0) {
+        showToast('Your cart is empty');
+        return;
+      }
+      if (!state.user) {
+        showToast('Please sign in first');
+        authModal.classList.add('open');
+        return;
+      }
+
+      const order = {
+        id: 'ORD-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
+        createdAt: new Date().toISOString(),
+        user: state.user,
+        items: cartEntries(),
+        shipping: {
+          fullName: fullName.value,
+          address: address.value,
+          city: city.value,
+          zip: zip.value
+        },
+        payment: payment.value,
+        total: updateTotals().total
+      };
+
+      const existing = JSON.parse(localStorage.getItem('vegitables-orders') || '[]');
+      existing.push(order);
+      localStorage.setItem('vegitables-orders', JSON.stringify(existing));
+
+      state.cart = {};
+      saveState();
+      renderCart();
+      e.target.reset();
+      showToast(`Order placed: ${order.id}`);
+    });
+
+    renderProducts();
+    renderCart();
+    renderAccount();
   </script>
 </body>
 </html>
